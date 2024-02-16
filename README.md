@@ -6,7 +6,7 @@ A proof of concept petition filing application built using Fuel, an ethereum bas
 1. Go to https://wallet.fuel.network/docs/install/ and click on “Install Fuel Wallet”
 2. Once installed, create a new wallet. You will receive a wallet address.
 3. Head over to https://faucet-beta-4.fuel.network/
-4. Paste your wallet address and submit the captcha. Then, click of "Give me Ether".
+4. Paste your wallet address and submit the captcha. Then, click on "Give me Ether".
 5. You will receive 0.5 ETH in your wallet.
 
 ### Instructions to Run Locally
