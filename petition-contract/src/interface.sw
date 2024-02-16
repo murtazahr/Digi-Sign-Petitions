@@ -4,19 +4,19 @@ use ::data_structures::{
     campaign::Campaign,
     campaign_info::CampaignInfo,
     signs::Signs,
-}
+};
 
 abi Petition {
-
+    
     #[storage(read, write)]
     fn cancel_campaign(id: u64);
-
+   
     #[storage(read, write)]
     fn end_campaign(id: u64);
-
+   
     #[storage(read, write)]
     fn create_campaign(deadline: u64);
-
+    
     #[storage(read, write)]
     fn sign_petition(id: u64);
 

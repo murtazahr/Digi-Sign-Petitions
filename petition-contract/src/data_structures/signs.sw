@@ -2,8 +2,8 @@ library;
 
 pub struct Signs {
     // Signing to a campaign; it should always be 1
-    sign: u8;
-    campaign_id: u64;
+    sign: u8,
+    campaign_id: u64,
 }
 
 impl Signs {
