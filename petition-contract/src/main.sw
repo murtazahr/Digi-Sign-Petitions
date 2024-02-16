@@ -101,4 +101,65 @@ impl Petition for Contract {
 
         log(SuccessfulCampaignEvent { campaign_id, total_signs });
     }
+
+    #[storage(read, write)]
+    fn sign_petition(campaign_id: u64) {
+        validate_campaign_id(campaign_id, storage.total_campaigns.read());
+        let mut campaign_info = storage.campaign_info.get(campaign_id).try_read().unwrap();
+
+        require(campaign_info.deadline > height().as_u64(), CampaignError::CampaignEnded);
+
+        require(campaign_info.state != CampaignState::Cancelled, CampaignError::CampaignHasBeenCancelled);
+
+        let user = msg_sender().unwrap();
+        let sign_count = storage.sign_count.get(user).try_read().unwrap_or(0);
+
+        let mut sign_history_index = storage.sign_history_index.get((user, campaign_id)).try_read().unwrap_or(0);
+
+        require(sign_history_index == 0, UserError::AlreadySigned);
+        
+        storage.sign_count.insert(user, sign_count + 1);
+
+        storage.sign_history.insert((user, sign_count + 1), Signs::new(campaign_id));
+
+        storage.sign_history_index.insert((user, campaign_id), sign_count + 1);
+
+        campaign_info.total_signs += 1;
+
+        storage.campaign_info.insert(campaign_id, campaign_info);
+
+        log(SignedEvent {
+            campaign_id,
+            user,
+        });
+    }
+
+    #[storage(read, write)]
+    fn unsign_petition(campaign_id: u64) {
+        validate_campaign_id(campaign_id, storage.total_campaigns.read());
+
+        let mut campaign_info = storage.campaign_info.get(campaign_id).try_read().unwrap();
+
+        if campaign_info.deadline <= height().as_u64() {
+            require(campaign_info.state != CampaignState::Successful, UserError::SuccessfulCampaign);
+        }
+
+        let user = msg_sender().unwrap();
+        let sign_history_index = storage.sign_history_index.get((user, campaign_id)).try_read().unwrap_or(0);
+
+        require(sign_history_index != 0, UserError::UserHasNotSigned);
+
+        let mut signed = storage.sign_history.get((user, sign_history_index)).try_read().unwrap();
+
+        campaign_info.total_signs -= 1;
+
+        storage.sign_history.insert((user, sign_history_index), signed);
+
+        storage.campaign_info.insert(campaign_id, campaign_info);
+
+        log(UnsignedEvent {
+            campaign_id,
+            user,
+        });
+    }
 }
