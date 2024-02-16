@@ -163,3 +163,36 @@ impl Petition for Contract {
         });
     }
 }
+
+impl Info for Contract {
+
+    #[storage(read)]
+    fn campaign_info(campaign_id: u64) -> Option<CampaignInfo> {
+        storage.campaign_info.get(campaign_id).try_read()
+    }
+
+    #[storage(read)]
+    fn campaign(campaign_id: u64, user: Identity) -> Option<Campaign> {
+        storage.campaign_history.get((user, campaign_id)).try_read()
+    }
+
+    #[storage(read)]
+    fn sign_count(user: Identity) -> u64 {
+        storage.sign_count.get(user).try_read().unwrap_or(0)
+    }
+
+    #[storage(read)]
+    fn signed(sign_history_index: u64, user: Identity) -> Option<Signs> {
+        storage.sign_history.get((user, sign_history_index)).try_read()
+    }
+
+    #[storage(read)]
+    fn total_campaigns() -> u64 {
+        storage.total_campaigns.read()
+    }
+
+    #[storage(read)]
+    fn user_campaign_count(user: Identity) -> u64 {
+        storage.user_campaign_count.get(user).try_read().unwrap_or(0)
+    }
+}
